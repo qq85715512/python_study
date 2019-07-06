@@ -1,0 +1,6 @@
+[data]
+game_info_raw = ['game_id', 'home_score', 'guest_score', 'home_rank', 'guest_rank', 'standard_home', 'standard', 'standard_guest']
+game_info_clean = ['game_id', 'game_rst_two_cls', 'game_rst_three_cls', 'home_score', 'guest_score', 'home_rank_clean', 'guest_rank_clean', 'standard_home', 'standard', 'standard_guest']
+game_ratio_info_raw = ['game_id', 'position_tm', 'home_ratio', 'position_ratio', 'guest_ratio']
+game_ratio_info_clean = ['game_id', 'position_tm', 'home_ratio', 'odds_grail', 'guest_ratio']
+odds_grail_map = {'*五/五球半': -15, '*五球': -14, '*四/四球半': -13, '*四球': -12, '*三/三球半': -11, '*三球': -10, '*两/两球半': -9, '*两球': -8, '*球半/两': -7, '*球半': -6, '*一/球半': -5, '*一球': -4, '*半/一': -3, '*半球': -2, '*平/半': -1, '平手': 0, '平/半': 1, '半球': 2, '半/一': 3, '一球': 4, '一/球半': 5, '球半': 6, '球半/两': 7, '两球': 8, '两/两球半': 9, '三球': 10, '三/三球半': 11, '四球': 12, '四/四球半': 13, '五球': 14, '五/五球半': 15}
