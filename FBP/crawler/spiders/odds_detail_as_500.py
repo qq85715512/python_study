@@ -1,20 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime
-import jsonpath
-import json
-from crawler.items import *
+from crawler.items import GameInfoItem, GameRatioInfoItem
+import scrapy
+import re
+
 
 game_info_url_base = 'http://odds.500.com/index_jczq_{0}.shtml'
 game_ratio_info_url_base = 'http://odds.500.com/fenxi/yazhi-{0}.shtml'
-
-
-# 通过jsonpath按列来解析需要的元素
-def get_val_by_xpath(json_obj, xpath_exp):
-    json_grp = jsonpath(json_obj, xpath_exp)
-    l = []
-    for i in json_grp:
-        l.append(str(i))
-    return l
 
 
 def get_score(rst, is_home):
@@ -27,7 +19,7 @@ def get_score(rst, is_home):
 
 
 class ToScrapeSpiderXPath(scrapy.Spider):
-    def __init__(self, start_dt=datetime.date(2019, 1, 1), end_dt=datetime.date(2019, 7, 2), *args, **kwargs):
+    def __init__(self, start_dt=datetime.date(2019, 7, 1), end_dt=datetime.date(2019, 7, 9), *args, **kwargs):
         self.start_dt = start_dt
         self.end_dt = end_dt
 
@@ -47,7 +39,7 @@ class ToScrapeSpiderXPath(scrapy.Spider):
             game_info_item = GameInfoItem()
             game_info_item['game_id'] = tr.css('td')[0].css('input::attr(value)').get()
             game_info_item['game_dt'] = start_dt
-            game_info_item['ser_num'] = tr.css('td')[0].css(':last-child::text')[2:]
+            game_info_item['ser_num'] = tr.css('td')[0].css(':last-child::text').get[2:]
             game_info_item['game_tm'] = tr.css('td')[3].css('::text').get()[6:]
             game_info_item['league_simple_name'] = tr.css('td')[1].css(':last-child::text').get()
             game_info_item['home_team_name'] = tr.css('td')[4].css(':last-child::text').get()
@@ -67,7 +59,8 @@ class ToScrapeSpiderXPath(scrapy.Spider):
 
             game_ratio_info_url = game_ratio_info_url_base.format(game_info_item['id'])
             yield scrapy.Request(game_ratio_info_url, callback=self.parse,
-                                 meta={'game_id': game_info_item['game_id'],
+                                args={'wait': 0.5},
+                                meta={'game_id': game_info_item['game_id'],
                                        'ser_num': game_info_item['ser_num'],
                                        'game_dt': game_info_item['game_dt']})
 
@@ -75,30 +68,37 @@ class ToScrapeSpiderXPath(scrapy.Spider):
         game_id = response.meta['game_id']
         game_dt = response.meta['game_dt']
         ser_num = response.meta['ser_num']
-        for tr in response.css('tr[tr[xls="row"]')[:10]:
-            company = tr.css('td')[1].css('::text').get()
-            rati = tr.css('table')[1]
-            game_ratio_info_item = GameRatioInfoItem()
-            home_ratio = ratio[0].strip()
-            position_ratio = ratio[1].strip()
-            guest_ratio = ratio[2].strip()
-            position_tm = ratio[3].strip()
-            status = ratio[4].strip()
-            game_ratio_info_item['game_id'] = game_id
-            game_ratio_info_item['game_dt'] = game_dt
-            game_ratio_info_item['ser_num'] = ser_num
-            game_ratio_info_item['position_tm'] = position_tm
-            game_ratio_info_item['home_ratio'] = home_ratio
-            game_ratio_info_item['position_ratio'] = position_ratio
-            game_ratio_info_item['guest_ratio'] = guest_ratio
-            game_ratio_info_item['status'] = status
-            game_ratio_info_item['company'] = ''
-            yield game_ratio_info_item
+        for tr in response.css('tr[xls="row"]')[:10]:
+            tds = tr.xpath('descendant-or-self::td')
+            company = tds[1].css('::text').get()
+            ji = GameRatioInfoItem
+            ji_home_ratio = re.search('[.0-9]+', tds[3].css('::text').get()).group(0)
+            ji_position_ratio = tds[4].css('::text').get().replace(' |降|升','')
+            ji_guest_ratio = re.search('[.0-9]+', tds[5].css('::text').get()).group(0)
+            ji_position_tm = game_dt[:4] + tds[7].css('::text').get()
+            ji['game_id'] = game_id
+            ji['game_dt'] = game_dt
+            ji['ser_num'] = ser_num
+            ji['position_tm'] = ji_position_tm
+            ji['home_ratio'] = ji_home_ratio
+            ji['position_ratio'] = ji_position_ratio
+            ji['guest_ratio'] = ji_guest_ratio
+            ji['status'] = ''
+            ji['company'] = company
+            yield ji
 
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
+            chu = GameRatioInfoItem()
+            chu_home_ratio = re.search('[.0-9]+', tds[9].css('::text').get()).group(0)
+            chu_position_ratio = tds[10].css('::text').get().replace(' |降|升','')
+            chu_guest_ratio = re.search('[.0-9]+', tds[11].css('::text').get()).group(0)
+            chu_position_tm = game_dt[:4] + tds[12].css('::text').get()
+            chu['game_id'] = game_id
+            chu['game_dt'] = game_dt
+            chu['ser_num'] = ser_num
+            chu['position_tm'] = ji_position_tm
+            chu['home_ratio'] = ji_home_ratio
+            chu['position_ratio'] = ji_position_ratio
+            chu['guest_ratio'] = ji_guest_ratio
+            chu['status'] = ''
+            chu['company'] = company
+            yield chu
