@@ -53,11 +53,11 @@ class ToScrapeSpiderXPath(scrapy.Spider):
             game_info_item['standard'] = tr.css('td')[12].css('::text').get()
             game_info_item['standard_guest'] = tr.css('td')[13].css('::text').get()
             game_info_item['award'] = ''
-            if game_info_item['standardHome'] is not None:
-                game_info_item['award'] = ' '.join([game_info_item['standardHome'], game_info_item['standard'], game_info_item['standardGuest']])
+            if game_info_item['standard_home'] is not None:
+                game_info_item['award'] = ' '.join([game_info_item['standard_home'], game_info_item['standard'], game_info_item['standard_guest']])
             yield game_info_item
 
-            game_ratio_info_url = game_ratio_info_url_base.format(game_info_item['id'])
+            game_ratio_info_url = game_ratio_info_url_base.format(game_info_item['game_id'])
             yield scrapy.Request(game_ratio_info_url, callback=self.parse,
                                 args={'wait': 0.5},
                                 meta={'game_id': game_info_item['game_id'],
@@ -73,7 +73,7 @@ class ToScrapeSpiderXPath(scrapy.Spider):
             company = tds[1].css('::text').get()
             ji = GameRatioInfoItem
             ji_home_ratio = re.search('[.0-9]+', tds[3].css('::text').get()).group(0)
-            ji_position_ratio = tds[4].css('::text').get().replace(' |降|升','')
+            ji_position_ratio = tds[4].css('::text').get().replace(' |降|升', '')
             ji_guest_ratio = re.search('[.0-9]+', tds[5].css('::text').get()).group(0)
             ji_position_tm = game_dt[:4] + tds[7].css('::text').get()
             ji['game_id'] = game_id
@@ -89,7 +89,7 @@ class ToScrapeSpiderXPath(scrapy.Spider):
 
             chu = GameRatioInfoItem()
             chu_home_ratio = re.search('[.0-9]+', tds[9].css('::text').get()).group(0)
-            chu_position_ratio = tds[10].css('::text').get().replace(' |降|升','')
+            chu_position_ratio = tds[10].css('::text').get().replace(' |降|升', '')
             chu_guest_ratio = re.search('[.0-9]+', tds[11].css('::text').get()).group(0)
             chu_position_tm = game_dt[:4] + tds[12].css('::text').get()
             chu['game_id'] = game_id
