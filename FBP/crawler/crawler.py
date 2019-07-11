@@ -1,9 +1,13 @@
 from urllib.error import URLError
 from urllib.request import urlopen
+
+import gzip
+import zlib
 from jsonpath import jsonpath
 from bs4 import BeautifulSoup
 import time
 import logging
+import requests
 
 import pandas as pd
 import json
@@ -17,9 +21,9 @@ def decode_page(page_bytes, charsets=('utf-8',)):
         try:
             page_html = page_bytes.decode(charset)
             break
-        except UnicodeDecodeError:
+        except UnicodeDecodeError as e:
             pass
-            # logging.error('Decode:', error)
+            logging.error('Decode:', e)
     return page_html
 
 
@@ -27,7 +31,18 @@ def decode_page(page_bytes, charsets=('utf-8',)):
 def get_page_html(seed_url, *, retry_times=3, charsets=('utf-8',)):
     page_html = None
     try:
-        page_html = decode_page(urlopen(seed_url).read(), charsets)
+        repsonse = urlopen(seed_url)
+        html = repsonse.read()
+        encoding = repsonse.info().get('Content-Encoding')
+        if encoding == 'gzip':
+            html = zlib.decompress(html, 16+zlib.MAX_WBITS)
+        elif encoding == 'deflate':
+            try:
+                html = zlib.decompress(html, -zlib.MAX_WBITS)
+            except zlib.error:
+                html = zlib.compress(html)
+        page_html = decode_page(html, charsets)
+        # page_html = requests.get(seed_url)
     except URLError as e:
         logging.error('URL:', e)
         if retry_times > 0:
@@ -256,15 +271,108 @@ def get_val_by_xpath(json_obj, xpath_exp):
     return l
 
 
+def get_score(rst, is_home):
+    if rst is None or rst == 'VS':
+        return ''
+    if is_home:
+        return rst.split(':')[0]
+    else:
+        return rst.split(':')[1]
+
+
+def get_today_game_info_500(response, start_dt):
+    soup = BeautifulSoup(response, 'lxml')
+    game_info = []
+    print(soup.prettify())
+    xx = soup.find_all('tbody', id="match-tbody").find_all('tr')
+    for tr in soup.find_all('tbody', id='main-body'):
+        game_info_item = dict()
+        game_info_item['game_id'] = tr.css('td')[0].css('input::attr(value)').get()
+        game_info_item['game_dt'] = start_dt
+        game_info_item['ser_num'] = tr.css('td')[0].css(':last-child::text')[2:]
+        game_info_item['game_tm'] = tr.css('td')[3].css('::text').get()[6:]
+        game_info_item['league_simple_name'] = tr.css('td')[1].css(':last-child::text').get()
+        game_info_item['home_team_name'] = tr.css('td')[4].css(':last-child::text').get()
+        game_info_item['guest_team_name'] = tr.css('td')[6].css(':last-child::text').get()
+        game_info_item['game_rst'] = tr.css('td')[5].css(':last-child::text').get()
+        game_info_item['home_score'] = get_score(game_info_item['game_rst'], 1)
+        game_info_item['guest_score'] = get_score(game_info_item['game_rst'], 0)
+        game_info_item['home_rank'] = ''
+        game_info_item['guest_rank'] = ''
+        game_info_item['standard_home'] = tr.css('td')[11].css('::text').get()
+        game_info_item['standard'] = tr.css('td')[12].css('::text').get()
+        game_info_item['standard_guest'] = tr.css('td')[13].css('::text').get()
+        game_info_item['award'] = ''
+        if game_info_item['standardHome'] is not None:
+            game_info_item['award'] = ' '.join(
+                [game_info_item['standardHome'], game_info_item['standard'], game_info_item['standardGuest']])
+        game_info.append(game_info_item)
+    return game_info
+
+
+def start_crawl_500(start_dt, end_dt, day_step, url_base):
+    file_start_dt = start_dt
+    file_end_dt = end_dt
+    if url_base is None:
+        url_base = 'https://live.13322.com/lotteryScore/list?getExtra=2&lang=zh&date={0}'
+    game_info_columns = ['比赛日期', '比赛序号', '比赛时间', '赛事类型', '主队名称', '客队名称', '比分赛果', '胜平负奖金', '主队得分', '客队得分', '比赛ID']
+    game_ratio_info_columns = ['比赛日期', '比赛序号', '盘口时间', '赔率盘口', '主水', '客水', '博彩公司名称', '比赛ID']
+    game_info_list = []
+    game_ratio_info_list = []
+    # 将DataFrame存储为csv,index表示是否显示行名，default=True
+    while start_dt <= end_dt:
+        print('*' * 100, '正在抓取{}的比赛信息'.format(start_dt), '*' * 100)
+        url = url_base.format(start_dt)
+        response = get_page_html(url, charsets=('utf-8', 'gbk', 'gb2312'))
+        if response is None:
+            start_dt = start_dt + day_step
+            continue
+        tmp = get_today_game_info_500(response, start_dt)
+        if tmp is None:
+            start_dt = start_dt + day_step
+            print('*' * 100, '{}没有数据'.format(start_dt), '*' * 100)
+            continue
+        game_info_list_tmp = list(tmp)
+        game_info_list.extend(game_info_list_tmp)
+        game_ratio_info_list.extend(get_game_ratio_info(game_info_list_tmp))
+        print('*' * 100, '{}的比赛信息已经抓取完成'.format(start_dt), '*' * 100)
+        start_dt = start_dt + day_step
+        time.sleep(3)
+    game_info_df = pd.DataFrame(game_info_list, columns=game_info_columns)
+    game_info_df.drop(['主队得分', '客队得分', '比赛ID'], axis=1, inplace=True)
+    game_ratio_info_df = pd.DataFrame(game_ratio_info_list, columns=game_ratio_info_columns)
+    game_ratio_info_df.drop(['比赛ID'], axis=1, inplace=True)
+    game_info_df.to_csv('game_info_{}-{}.csv'.format(file_start_dt.strftime('%y%m%d'), file_end_dt.strftime('%y%m%d')),
+                        index=False, sep=',', columns=game_info_columns[:-3])
+    game_ratio_info_df.to_csv(
+        'game_ratio_info_{}-{}.csv'.format(file_start_dt.strftime('%y%m%d'), file_end_dt.strftime('%y%m%d')),
+        index=False, sep=',', columns=game_ratio_info_columns[:-1])
+
+
 def main():
     # ssl._create_default_https_context = ssl._create_unverified_context
-    start_dt = datetime.date(2019, 7, 5)
+    start_dt = datetime.date(2019, 7, 9)
     day_step = datetime.timedelta(days=1)
     # end_dt = datetime.date.today()
-    end_dt = datetime.date(2019, 7, 6)
+    end_dt = datetime.date(2019, 7, 9)
     page_url_base = 'https://live.13322.com/lotteryScore/list?getExtra=2&lang=zh&date={0}'
     start_crawl(start_dt, end_dt, day_step, page_url_base)
     # start_crawl_new(start_dt, end_dt, day_step, page_url_base)
+
+
+game_info_url_base = 'http://odds.500.com/index_jczq_{0}.shtml'
+game_ratio_info_url_base = 'http://odds.500.com/fenxi/yazhi-{0}.shtml'
+
+
+def main_500():
+    start_dt = datetime.date(2019, 7, 7)
+    day_step = datetime.timedelta(days=1)
+    # end_dt = datetime.date.today()
+    end_dt = datetime.date(2019, 7, 8)
+    start_crawl_500(start_dt, end_dt, day_step, url_base=game_info_url_base)
+
+
+    pass
 
 
 if __name__ == '__main__':
