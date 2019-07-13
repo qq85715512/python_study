@@ -22,45 +22,45 @@ ITEM_PIPELINES = {
     # 'crawler.pipelines.GameRatioInfoPipelineIncrement': 50,
     'crawler.pipelines.GameRatioInfoPipelineLTT': 60,
 }
-
-IPPOOL=[
-    {"ipaddr": "115.219.34.117:9000"},
-    {"ipaddr": "58.22.212.86:9000"},
-    {"ipaddr": "120.78.79.150:8081"},
-    {"ipaddr": "175.44.149.71:9000"},
-    {"ipaddr": "60.217.73.238:8060"},
-    {"ipaddr": "211.159.171.58:80"},
-    {"ipaddr": "117.90.137.226:9000"},
-    {"ipaddr": "163.125.232.9:8118"},
-    {"ipaddr": "180.168.13.26:8000"},
-    {"ipaddr": "117.90.31.83:9999"},
-    {"ipaddr": "180.118.247.172:9000"},
-    {"ipaddr": "210.5.10.87:53281"},
-    {"ipaddr": "121.232.148.184:9000"},
-    {"ipaddr": "111.230.203.211:8118"},
-    {"ipaddr": "117.90.7.254:9000"}
-]
-
-USER_AGENT_LIST=[
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
-    "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
-    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",
-    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/19.77.34.5 Safari/537.1",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5",
-    "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
-    "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SE 2.X MetaSr 1.0; SE 2.X MetaSr 1.0; .NET CLR 2.0.50727; SE 2.X MetaSr 1.0)",
-    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
-    "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",
-    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
-]
+#
+# IPPOOL=[
+#     {"ipaddr": "115.219.34.117:9000"},
+#     {"ipaddr": "58.22.212.86:9000"},
+#     {"ipaddr": "120.78.79.150:8081"},
+#     {"ipaddr": "175.44.149.71:9000"},
+#     {"ipaddr": "60.217.73.238:8060"},
+#     {"ipaddr": "211.159.171.58:80"},
+#     {"ipaddr": "117.90.137.226:9000"},
+#     {"ipaddr": "163.125.232.9:8118"},
+#     {"ipaddr": "180.168.13.26:8000"},
+#     {"ipaddr": "117.90.31.83:9999"},
+#     {"ipaddr": "180.118.247.172:9000"},
+#     {"ipaddr": "210.5.10.87:53281"},
+#     {"ipaddr": "121.232.148.184:9000"},
+#     {"ipaddr": "111.230.203.211:8118"},
+#     {"ipaddr": "117.90.7.254:9000"}
+# ]
+#
+# USER_AGENT_LIST=[
+#     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
+#     "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",
+#     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
+#     "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",
+#     "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/19.77.34.5 Safari/537.1",
+#     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5",
+#     "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5",
+#     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
+#     "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
+#     "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SE 2.X MetaSr 1.0; SE 2.X MetaSr 1.0; .NET CLR 2.0.50727; SE 2.X MetaSr 1.0)",
+#     "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
+#     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
+#     "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)",
+#     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
+#     "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
+#     "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",
+#     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",
+#     "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
+# ]
 
 # DOWNLOADER_MIDDLEWARES = {
 # #    ‘myproxies.middlewares.MyCustomDownloaderMiddleware’: 543,
@@ -69,7 +69,7 @@ USER_AGENT_LIST=[
 #      'crawler.middlewares.RandomUserAgentMiddleware': 12
 # }
 
-DOWNLOAD_DELAY = 2
+# DOWNLOAD_DELAY = 1
 # RANDOMIZE_DOWNLOAD_DELAY = True
 # COOKIES_ENABLED = True
 
