@@ -24,7 +24,7 @@ def get_val_by_xpath(json_obj, xpath_exp):
 
 
 class ToScrapeSpiderXPath(scrapy.Spider):
-    def __init__(self, start_dt=datetime.date(2019, 1, 1), end_dt=datetime.date(2019, 7, 2), *args, **kwargs):
+    def __init__(self, start_dt=datetime.date(2019, 7, 1), end_dt=datetime.date(2019, 7, 2), *args, **kwargs):
         self.start_dt = start_dt
         self.end_dt = end_dt
 

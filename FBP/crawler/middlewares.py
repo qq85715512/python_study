@@ -24,7 +24,6 @@ class ProxySpiderMiddleware(object):
         print("this is request ip:"+proxy)
         request.meta['proxy'] = proxy
 
-
     def process_response(self, request, response, spider):
         '''对返回的response处理'''
         # 如果返回的response状态不是200，重新生成当前request对象
@@ -45,6 +44,7 @@ class ProxySpiderMiddleware(object):
             if proxies:
                 break
             else:
-                time.sleep(1)
+                # time.sleep(1)
+                pass
         proxy = random.choice(proxies).strip()
         return proxy

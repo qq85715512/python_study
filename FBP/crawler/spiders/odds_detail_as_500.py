@@ -7,6 +7,8 @@ import re
 game_info_url_base = 'http://odds.500.com/index_jczq_{0}.shtml'
 game_ratio_info_url_base = 'http://odds.500.com/fenxi/yazhi-{0}.shtml'
 
+weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+
 
 def get_score(rst, is_home):
     if rst is None or rst == 'VS':
@@ -20,12 +22,12 @@ def get_score(rst, is_home):
 class ToScrapeSpiderXPath(scrapy.Spider):
     # 70453 207-07-03
     # 1391073
-    def __init__(self, start_dt=datetime.date(2019, 7, 13), end_dt=datetime.date(2010, 1, 1), *args, **kwargs):
-        # self.headers = {
-        #     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        #     'Accept-Encoding': 'gzip, deflate',
-        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-        # }
+    def __init__(self, start_dt=datetime.date(2017, 5, 5), end_dt=datetime.date(2010, 1, 1), *args, **kwargs):
+        self.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept-Encoding': 'gzip, deflate',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+        }
         self.start_dt = start_dt
         self.end_dt = end_dt
 
@@ -43,6 +45,9 @@ class ToScrapeSpiderXPath(scrapy.Spider):
         print(response)
         start_dt = response.meta['start_dt']
         for tr in response.css('tbody[id="main-tbody"]>tr[data-cid="3"]'):
+            weekday = tr.css('td')[0].css(':last-child::text').get()[:2]
+            if start_dt.weekday() != weekday_map[weekday]:
+                continue
             game_info_item = GameInfoItem()
             game_info_item['game_id'] = tr.css('td')[0].css('input::attr(value)').get()
             game_info_item['game_dt'] = start_dt
@@ -77,7 +82,9 @@ class ToScrapeSpiderXPath(scrapy.Spider):
         for tr in response.css('tr[xls="row"]'):
             tds = tr.xpath('descendant-or-self::td')
             company = tds[1].css('::text').get()
-            if company.lower() not in ('威廉希尔','澳门','bet365','皇冠','易胜博','interwetten','10bet','伟德'):
+            # if company.lower().strip() not in ('威廉希尔','澳门','皇冠','易胜博','伟德'):
+            if company.lower().strip() not in ('威廉希尔','澳门','bet365','皇冠','易胜博','interwetten','10bet','伟德'):
+            # if company.lower().strip() not in ('bet365','interwetten','10bet' ):
                 continue
             ji_game_year = game_dt.year
             chu_game_year = game_dt.year
