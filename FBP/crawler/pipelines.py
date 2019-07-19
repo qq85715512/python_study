@@ -55,7 +55,7 @@ class GameInfoPipelineLTT(object):
         # csv文件的位置,无需事先创建
         store_ltt_file = os.path.dirname(__file__) + '/output/game_info_target.csv'
         # 打开(创建)文件
-        self.ltt_file = open(store_ltt_file, 'a', encoding='utf8', newline='')
+        self.ltt_file = open(store_ltt_file, 'w', encoding='utf8', newline='')
         # csv写法
         self.ltt_writer = csv.writer(self.ltt_file)
         # self.ltt_writer.writerow(['比赛日期', '比赛序号', '比赛时间', '赛事类型', '主队名称', '客队名称', '比分赛果', '胜平负奖金'])
@@ -119,7 +119,7 @@ class GameRatioInfoPipelineLTT(object):
     def __init__(self):
         store_ltt_file = os.path.dirname(__file__) + '/output/game_ratio_info_target.csv'
         # 打开(创建)文件
-        self.ltt_file = open(store_ltt_file, 'a', encoding='utf8', newline='')
+        self.ltt_file = open(store_ltt_file, 'w', encoding='utf8', newline='')
         # csv写法
         self.ltt_writer = csv.writer(self.ltt_file)
         # self.ltt_writer.writerow(['比赛日期', '比赛序号', '盘口时间', '赔率盘口', '主水', '客水', '博彩公司名称'])

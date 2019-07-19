@@ -20,14 +20,18 @@ def get_score(rst, is_home):
 
 
 class ToScrapeSpiderXPath(scrapy.Spider):
-    # 70453 207-07-03
-    # 1391073
-    def __init__(self, start_dt=datetime.date(2017, 5, 5), end_dt=datetime.date(2010, 1, 1), *args, **kwargs):
-        self.headers = {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Accept-Encoding': 'gzip, deflate',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-        }
+    def __init__(self, start_dt=None, end_dt=None, *args, **kwargs):
+        # self.headers = {
+        #     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        #     'Accept-Encoding': 'gzip, deflate',
+        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+        # }
+        if start_dt is None and end_dt is None:
+            start_dt = datetime.date.today()
+            end_dt = datetime.date.today()
+        else:
+            start_dt = datetime.datetime.strptime(start_dt, '%Y-%M-%d').date()
+            end_dt = datetime.datetime.strptime(end_dt, '%Y-%M-%d').date()
         self.start_dt = start_dt
         self.end_dt = end_dt
 
@@ -83,7 +87,7 @@ class ToScrapeSpiderXPath(scrapy.Spider):
             tds = tr.xpath('descendant-or-self::td')
             company = tds[1].css('::text').get()
             # if company.lower().strip() not in ('威廉希尔','澳门','皇冠','易胜博','伟德'):
-            if company.lower().strip() not in ('威廉希尔','澳门','bet365','皇冠','易胜博','interwetten','10bet','伟德'):
+            if company.lower().strip() not in ('威廉希尔', '澳门', 'bet365', '皇冠', '易胜博', 'interwetten', '10bet', '伟德'):
             # if company.lower().strip() not in ('bet365','interwetten','10bet' ):
                 continue
             ji_game_year = game_dt.year
