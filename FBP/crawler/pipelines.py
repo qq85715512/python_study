@@ -19,7 +19,9 @@ class GameInfoPipeline(object):
         if isinstance(item, GameInfoItem):
             self.writer.writerow(item.values())
             return item
-        elif isinstance(item, GameRatioInfoItem):
+        elif isinstance(item, GameRatioInfoYazhiItem):
+            return item
+        elif isinstance(item, GameRatioInfoOuzhiItem):
             return item
 
     def close_spider(self, spider):
@@ -42,7 +44,7 @@ class GameInfoPipelineIncrement(object):
         if isinstance(item, GameInfoItem):
             self.increment_writer.writerow(item.values())
             return item
-        elif isinstance(item, GameRatioInfoItem):
+        elif isinstance(item, GameRatioInfoYazhiItem):
             return item
 
     def close_spider(self, spider):
@@ -65,7 +67,9 @@ class GameInfoPipelineLTT(object):
         if isinstance(item, GameInfoItem):
             self.ltt_writer.writerow((item['game_dt'], item['ser_num'], item['game_tm'], item['league_simple_name'], item['home_team_name'], item['guest_team_name'], item['game_rst'], item['award']))
             return item
-        elif isinstance(item, GameRatioInfoItem):
+        elif isinstance(item, GameRatioInfoYazhiItem):
+            return item
+        elif isinstance(item, GameRatioInfoOuzhiItem):
             return item
 
     def close_spider(self, spider):
@@ -85,7 +89,7 @@ class GameRatioInfoPipeline(object):
     def process_item(self, item, spider):
         if isinstance(item, GameInfoItem):
             return item
-        elif isinstance(item, GameRatioInfoItem):
+        elif isinstance(item, GameRatioInfoYazhiItem):
             self.writer.writerow(item.values())
             return item
 
@@ -106,7 +110,7 @@ class GameRatioInfoPipelineIncrement(object):
     def process_item(self, item, spider):
         if isinstance(item, GameInfoItem):
             return item
-        elif isinstance(item, GameRatioInfoItem):
+        elif isinstance(item, GameRatioInfoYazhiItem):
             self.increment_writer.writerow(item.values())
             return item
 
@@ -115,9 +119,9 @@ class GameRatioInfoPipelineIncrement(object):
         self.increment_file.close()
 
 
-class GameRatioInfoPipelineLTT(object):
+class GameRatioInfoYazhiPipelineLTT(object):
     def __init__(self):
-        store_ltt_file = os.path.dirname(__file__) + '/output/game_ratio_info_target.csv'
+        store_ltt_file = os.path.dirname(__file__) + '/output/game_ratio_info_yazhi_target.csv'
         # 打开(创建)文件
         self.ltt_file = open(store_ltt_file, 'w', encoding='utf8', newline='')
         # csv写法
@@ -127,8 +131,33 @@ class GameRatioInfoPipelineLTT(object):
     def process_item(self, item, spider):
         if isinstance(item, GameInfoItem):
             return item
-        elif isinstance(item, GameRatioInfoItem):
-            self.ltt_writer.writerow((item['game_dt'], item['ser_num'], item['position_tm'], item['position_ratio'], item['home_ratio'], item['guest_ratio'], item['company']))
+        elif isinstance(item, GameRatioInfoYazhiItem):
+            self.ltt_writer.writerow((item['game_dt'], item['ser_num'], item['position_tm'], item['position_ratio'], item['home_ratio'], item['guest_ratio'], item['status'], item['company']))
+            return item
+        elif isinstance(item, GameRatioInfoOuzhiItem):
+            return item
+
+    def close_spider(self, spider):
+        # 关闭爬虫时顺便将文件保存退出
+        self.ltt_file.close()
+
+
+class GameRatioInfoOuzhiPipelineLTT(object):
+    def __init__(self):
+        store_ltt_file = os.path.dirname(__file__) + '/output/game_ratio_info_ouzhi_target.csv'
+        # 打开(创建)文件
+        self.ltt_file = open(store_ltt_file, 'w', encoding='utf8', newline='')
+        # csv写法
+        self.ltt_writer = csv.writer(self.ltt_file)
+        # self.ltt_writer.writerow(['比赛日期', '比赛序号', '胜率', '平率', '负率', '博彩公司名称'])
+
+    def process_item(self, item, spider):
+        if isinstance(item, GameInfoItem):
+            return item
+        elif isinstance(item, GameRatioInfoYazhiItem):
+            return item
+        elif isinstance(item, GameRatioInfoOuzhiItem):
+            self.ltt_writer.writerow((item['game_dt'], item['ser_num'], item['win_ratio'], item['draw_ratio'], item['fail_ratio'], item['status'], item['company']))
             return item
 
     def close_spider(self, spider):

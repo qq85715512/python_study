@@ -20,7 +20,7 @@ class GameInfoItem(scrapy.Item):
     standard_guest = scrapy.Field()
 
 
-class GameRatioInfoItem(scrapy.Item):
+class GameRatioInfoYazhiItem(scrapy.Item):
     game_id = scrapy.Field()
     game_dt = scrapy.Field()
     ser_num = scrapy.Field()
@@ -28,5 +28,16 @@ class GameRatioInfoItem(scrapy.Item):
     home_ratio = scrapy.Field()
     position_ratio = scrapy.Field()
     guest_ratio = scrapy.Field()
+    status = scrapy.Field()
+    company = scrapy.Field()
+
+
+class GameRatioInfoOuzhiItem(scrapy.Item):
+    game_id = scrapy.Field()
+    game_dt = scrapy.Field()
+    ser_num = scrapy.Field()
+    win_ratio = scrapy.Field()
+    draw_ratio = scrapy.Field()
+    fail_ratio = scrapy.Field()
     status = scrapy.Field()
     company = scrapy.Field()

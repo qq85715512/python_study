@@ -20,7 +20,9 @@ ITEM_PIPELINES = {
     'crawler.pipelines.GameInfoPipelineLTT': 30,
     # 'crawler.pipelines.GameRatioInfoPipeline': 40,
     # 'crawler.pipelines.GameRatioInfoPipelineIncrement': 50,
-    'crawler.pipelines.GameRatioInfoPipelineLTT': 60,
+    'crawler.pipelines.GameRatioInfoYazhiPipelineLTT': 60,
+    'crawler.pipelines.GameRatioInfoOuzhiPipelineLTT': 70,
+
 }
 #
 # IPPOOL=[
